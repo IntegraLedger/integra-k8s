@@ -1,0 +1,2 @@
+# This file ensures the state directory is tracked in Git
+# Actual state files will be created during deployment

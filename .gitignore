@@ -1,0 +1,48 @@
+# Secrets - NEVER commit these
+secrets/*.yaml
+secrets/*.yml
+*.key
+*.pem
+*.crt
+*.p12
+*.jks
+*.env
+.env.*
+
+# Helm
+*.tgz
+charts/*.tgz
+requirements.lock
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Logs
+*.log
+logs/
+
+# State backups (keep current state only)
+state/*.backup
+state/*.old
+
+# Local test files
+test/
+local/
+scratch/
+
+# Terraform (if ever used)
+*.tfstate
+*.tfstate.*
+.terraform/
+
+# Binaries
+bin/
+dist/

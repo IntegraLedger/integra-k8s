@@ -1,0 +1,120 @@
+# Hydra OAuth2 configuration - PRESERVED from production
+# Based on hydra-configuration-preservation.md
+
+hydra:
+  config:
+    # CRITICAL: Issuer URL - changing breaks all tokens
+    urls:
+      self:
+        issuer: https://auth.trustwithintegra.com
+      
+      # Login/Consent URLs - handled by admin-backend
+      login: https://api.trustwithintegra.com/admin/oauth2/login
+      consent: https://api.trustwithintegra.com/admin/oauth2/consent
+      logout: https://api.trustwithintegra.com/admin/oauth2/logout
+      error: https://trustwithintegra.com/error
+      post_logout_redirect: https://trustwithintegra.com/logout
+    
+    # For development, use in-memory database
+    dsn: memory
+    
+    # System Secret - CRITICAL for development (will be different in production)
+    secrets:
+      system:
+        - youReallyNeedToChangeThis901114906a82bd105489fb52ec317a51
+      cookie:
+        - youReallyNeedToChangeThis901114906a82bd105489fb52ec317a51
+    
+    # Service Ports - CRITICAL (services depend on these)
+    serve:
+      admin:
+        port: 4445
+      public:
+        port: 4444
+        cors:
+          enabled: true
+          allowed_origins:
+            - "*"
+          allowed_methods:
+            - POST
+            - GET
+            - PUT
+            - PATCH
+            - DELETE
+            - OPTIONS
+          allowed_headers:
+            - Authorization
+            - Content-Type
+            - X-Requested-With
+          exposed_headers:
+            - Content-Type
+          allow_credentials: true
+      
+    # OAuth2 configuration
+    oauth2:
+      expose_internal_errors: true
+      pkce:
+        enforced: false
+        enforced_for_public_clients: true
+    
+    # Token lifespans - using correct duration format
+    ttl:
+      access_token: 1h
+      refresh_token: 720h  # 30 days
+      id_token: 1h
+      auth_code: 10m
+      login_consent_request: 30m
+    
+    # Development settings
+    log:
+      level: debug
+      format: json
+      leak_sensitive_values: false
+
+  # Auto-migration for development
+  automigration:
+    enabled: true
+    type: initContainer
+
+# Service configuration - MUST match expected names
+service:
+  admin:
+    enabled: true
+    type: ClusterIP
+    port: 4445
+    name: hydra-admin  # CRITICAL: Must be exactly this
+  public:
+    enabled: true
+    type: ClusterIP
+    port: 4444
+    name: hydra-public  # CRITICAL: Must be exactly this
+
+# Deployment configuration
+deployment:
+  replicas: 1
+  # Enable Linkerd service mesh for mTLS
+  podMetadata:
+    annotations:
+      linkerd.io/inject: enabled
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+
+# Maester disabled for simplicity
+maester:
+  enabled: false
+
+# Job configuration
+job:
+  automigration:
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "50m"
+      limits:
+        memory: "128Mi"
+        cpu: "100m"

@@ -56,6 +56,9 @@ hydra:
       pkce:
         enforced: false
         enforced_for_public_clients: true
+      # Token enrichment webhook - adds user context to tokens
+      token_hook:
+        url: http://integra-admin-service.integra-apps.svc.cluster.local:3000/hydra/token
     
     # Token lifespans - using correct duration format
     ttl:
@@ -92,10 +95,10 @@ service:
 # Deployment configuration
 deployment:
   replicas: 1
-  # Enable Linkerd service mesh for mTLS
-  podMetadata:
-    annotations:
-      linkerd.io/inject: enabled
+  # Hydra should NOT be in Linkerd mesh - OAuth2 protocol conflicts with mTLS
+  # podMetadata:
+  #   annotations:
+  #     linkerd.io/inject: enabled
   resources:
     requests:
       memory: "128Mi"

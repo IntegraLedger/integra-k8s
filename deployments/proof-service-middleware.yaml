@@ -1,0 +1,9 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: proof-service-strip-prefix
+  namespace: integra-blockchain
+spec:
+  stripPrefix:
+    prefixes:
+      - /v1/proof

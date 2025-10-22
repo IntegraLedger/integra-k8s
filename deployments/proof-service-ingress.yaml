@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: integra-proof-service
+  namespace: integra-blockchain
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: integra-blockchain-cors-api@kubernetescrd,integra-blockchain-proof-service-strip-prefix@kubernetescrd
+    traefik.ingress.kubernetes.io/router.priority: "150"
+spec:
+  ingressClassName: traefik
+  rules:
+  - host: api.trustwithintegra.com
+    http:
+      paths:
+      - path: /v1/proof
+        pathType: Prefix
+        backend:
+          service:
+            name: integra-proof-service
+            port:
+              number: 3000
